@@ -2,20 +2,9 @@ import gradio as gr
 import os
 from tqdm import tqdm
 import random
-#harun - kullanilan resimleri klasore tasimak icin
-import shutil
 import time
 from moviepy.editor import *
 from moviepy.audio.fx.audio_fadeout import audio_fadeout
-
-kullanilanresim_directory = "kullanilanresim"
-if not os.path.exists(kullanilanresim_directory):
-    os.makedirs(kullanilanresim_directory)
-
-# Create "kullanilanmuzik" directory if it doesn't exist
-usedmusic_directory = "kullanilanmuzik"
-if not os.path.exists(usedmusic_directory):
-    os.makedirs(usedmusic_directory)
 
 
 class Img2Lookbook:
@@ -156,14 +145,7 @@ class Img2Lookbook:
 
             if len(music_bgs) > 0:
                 music_bg = random.sample(music_bgs, 1)[0]
-                #harun secilen muzigi bul - sil icin kullan
-                selected_music_path = os.path.join(music_bg_directory_path, music_bg)
-                #harun kullanilan muzigi tasimak için
-                destination_music = os.path.join(usedmusic_directory, music_bg)
-
-                #print(f'using bg music {music_bg}')
-                print(f'MUZIK YOLU{selected_music_path}')
-
+                print(f'using bg music {music_bg}')
 
         # Get a list of all files in the directory
         if random_images:
@@ -205,18 +187,12 @@ class Img2Lookbook:
                     if self.is_image_file(in_file):
                         clip_video = self.make(in_file)
                         clip_videos.append(clip_video)
-                        #harun resimleri sil -bunu acarsan siliyor asagidakileri kapa os.remove(in_file)
-                        #harun kullanilan resimleri tasimak icin asagidaki iki satir
-                        destination_file = os.path.join(kullanilanresim_directory, file)
-                        shutil.move(in_file, destination_file)
-
 
                 except Exception as ex:
                     print(str(ex))
 
                 # Update the progress bar
                 pbar.update(1)
-
 
         # Join videos
 
@@ -225,7 +201,6 @@ class Img2Lookbook:
 
         # Final
         final_video_clips = [videos_concat_clip]
-
 
         # Music background
         if music_bg is not None:
@@ -251,11 +226,6 @@ class Img2Lookbook:
             videos_concat_clip = videos_concat_clip.set_audio(
                 audio_fade)
             final_video_clips = [videos_concat_clip]
-            #harun ses silme
-            #os.remove(selected_music_path)
-            #harun kullanilan resim tasima
-            shutil.move(selected_music_path, destination_music)
-
 
         # Watermark
         if self.watermark_filepath != '' and self.watermark_x > -1 and self.watermark_y > -1:
@@ -277,7 +247,6 @@ class Img2Lookbook:
             out_directory_path, f'video-{unix_timestamp}.mp4')
         final_video_clip.write_videofile(
             final_output_video_filepath, fps=self.fps)
-
 
         return final_output_video_filepath
 
